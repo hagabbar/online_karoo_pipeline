@@ -11,8 +11,8 @@ from trigfind import find_trigger_files
 from gwpy.timeseries import TimeSeries
 from gwpy.table.lsctables import SnglBurstTable
 
-def locate_trigs(st,et):
-    cache = trigfind.find_trigger_files('L1:GDS-CALIB_STRAIN', 'Omicron', st, et)
+def locate_trigs(ifo,st,et):
+    cache = trigfind.find_trigger_files('%s:GDS-CALIB_STRAIN' % ifo, 'Omicron', st, et)
 
     return cache
 
@@ -35,13 +35,21 @@ def karoo_pip():
 if __name__ == '__main__':
     #construct the argument parse and parse the arguments
     ap = argparse.ArgumentParser()
+    ap.add_argument("-ifo", "--observatory", required=True,
+            help="observatory")
     ap.add_argument("-s", "--start-time", required=True,
             help="start time")
     ap.add_argument("-e", "--end-time", required=True,
             help="end time")
+    args = vars(ap.parse_args())
+
+    #Initializing parameters
+    ifo = args['ifo']
+    st = args['st']
+    et = args['et']
 
     #Extract trig files
-    cache = locate_trigs(st,et)
+    cache = locate_trigs(ifo,st,et)
     
     #Perform pre-processing of triggers (snr > 7.5)
     trigs = preproc(cache)    

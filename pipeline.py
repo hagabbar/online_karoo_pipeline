@@ -6,9 +6,10 @@ import sys
 import os
 import numpy as np
 import argparse
+import trigfind
 from trigfind import find_trigger_files
 from gwpy.timeseries import TimeSeries
-
+from gwpy.table.lsctables import SnglBurstTable
 
 def locate_trigs(st,et):
     cache = trigfind.find_trigger_files('L1:GDS-CALIB_STRAIN', 'Omicron', st, et)
@@ -16,8 +17,20 @@ def locate_trigs(st,et):
     return cache
 
 def preproc(cache):
-     data = TimeSeries.read(cache, ‘L1:GDS-CALIB_STRAIN’)
+     data = SnglBurstTable.read(cache)
+     GPS_obj = data.get_peak()
+     gps_array = []
+     for idx in range(0,len(GPS_obj)):
+         time = data.get_peak()[idx].gpsSeconds
+         gps_array.append(time)
+     SNR = data.get_z()
+     mask = SNR > 7.5
+     trigs = np.asarray(gps_array)[mask]
 
+     return trigs
+
+def karoo_pip():
+    
 
 if __name__ == '__main__':
     #construct the argument parse and parse the arguments
@@ -34,8 +47,10 @@ if __name__ == '__main__':
     trigs = preproc(cache)    
 
     #Run script for generating features
+    #Need location for script and parameters to feed into it. Ask Marco?
 
     #Process features against karoo generated multivariant expression, one for each type of glitch
+
 
     #Write in an html page if gltich type of not
  

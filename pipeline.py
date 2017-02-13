@@ -20,40 +20,47 @@ def preproc(cache):
      data = SnglBurstTable.read(cache)
      GPS_obj = data.get_peak()
      gps_array = []
+     q_array = []
+     print 'processing triggers'
+
      for idx in range(0,len(GPS_obj)):
          time = data.get_peak()[idx].gpsSeconds
          gps_array.append(time)
+
      SNR = data.get_z()
      mask = SNR > 7.5
-     trigs = np.asarray(gps_array)[mask]
+     trig_times = np.asarray(gps_array)[mask]
+     del gps_array
+     q = data.get_q()
 
-     return trigs
+     return trig_times, q, data
 
-def karoo_pip():
+#def karoo_pip():
     
 
 if __name__ == '__main__':
     #construct the argument parse and parse the arguments
     ap = argparse.ArgumentParser()
-    ap.add_argument("-ifo", "--observatory", required=True,
+    ap.add_argument("-ifo", "--observatory", required=False,
             help="observatory")
-    ap.add_argument("-s", "--start-time", required=True,
+    ap.add_argument("-s", "--start_time", required=True,
             help="start time")
-    ap.add_argument("-e", "--end-time", required=True,
+    ap.add_argument("-e", "--end_time", required=True,
             help="end time")
     args = vars(ap.parse_args())
 
     #Initializing parameters
-    ifo = args['ifo']
-    st = args['st']
-    et = args['et']
+    ifo = 'L1'
+    st = int(args['start_time'])
+    et = int(args['end_time'])
 
     #Extract trig files
     cache = locate_trigs(ifo,st,et)
     
     #Perform pre-processing of triggers (snr > 7.5)
-    trigs = preproc(cache)    
-
+    trigs, raw_data = preproc(cache)    
+   
+    np.save('test.npy', trigs)
     #Run script for generating features
     #Need location for script and parameters to feed into it. Ask Marco?
 

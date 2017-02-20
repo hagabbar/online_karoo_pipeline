@@ -18,22 +18,25 @@ def locate_trigs(ifo,st,et):
 
 def preproc(cache):
      data = SnglBurstTable.read(cache)
-     GPS_obj = data.get_peak()
+     GPS_obj = data.get_peak().astype(float)
      gps_array = []
      q_array = []
      print 'processing triggers'
 
-     for idx in range(0,len(GPS_obj)):
-         time = data.get_peak()[idx].gpsSeconds
-         gps_array.append(time)
+#     for idx in range(0,len(GPS_obj)):
+#         time = data.get_peak()[idx].gpsSeconds
+#         gps_array.append(time)
 
      SNR = data.get_z()
      mask = SNR > 7.5
      trig_times = np.asarray(gps_array)[mask]
      del gps_array
-     q = data.get_q()
+     q = data.get_q()[mask]
+     bw = data.get_column('bandwidth')[mask]
+     dur = data.get_column('duration')[mask]
+     freq = data.get_column('peak_frequency')[mask]
 
-     return trig_times, q, data
+     return GPS_obj, q, mask, bw, dur, freq, data
 
 #def karoo_pip():
     
@@ -50,7 +53,7 @@ if __name__ == '__main__':
     args = vars(ap.parse_args())
 
     #Initializing parameters
-    ifo = 'L1'
+    ifo = args['observatory']
     st = int(args['start_time'])
     et = int(args['end_time'])
 
@@ -60,7 +63,7 @@ if __name__ == '__main__':
     #Perform pre-processing of triggers (snr > 7.5)
     trigs, raw_data = preproc(cache)    
    
-    np.save('test.npy', trigs)
+    np.save('luciano_h1trigs.npy', trigs)
     #Run script for generating features
     #Need location for script and parameters to feed into it. Ask Marco?
 

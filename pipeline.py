@@ -31,12 +31,13 @@ def preproc(cache):
      mask = SNR > 7.5
      trig_times = np.asarray(GPS_obj)[mask]
      del gps_array
+     snr = SNR[mask]
      #q = data.get_q()[mask]
      #bw = data.get_column('bandwidth')[mask]
      #dur = data.get_column('duration')[mask]
      #freq = data.get_column('peak_frequency')[mask]
 
-     return GPS_obj  #, q, mask, bw, dur, freq, data
+     return GPS_obj, snr #, q, mask, bw, dur, freq, data
 
 #def karoo_pip():
     
@@ -61,9 +62,12 @@ if __name__ == '__main__':
     cache = locate_trigs(ifo,st,et)
     
     #Perform pre-processing of triggers (snr > 7.5)
-    trigs = preproc(cache)    
-   
-    np.save('luciano_h1trigs.npy', trigs)
+    times, snr = preproc(cache)    
+    
+    comb = np.concatenate((times, snr))  
+ 
+    np.save('luciano_h1_times.npy', times)
+    np.save('luciano_h1_snr.npy', snr)
     #Run script for generating features
     #Need location for script and parameters to feed into it. Ask Marco?
 

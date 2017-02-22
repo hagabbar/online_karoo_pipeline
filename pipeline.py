@@ -44,7 +44,7 @@ def preproc(cache):
 if __name__ == '__main__':
     #construct the argument parse and parse the arguments
     ap = argparse.ArgumentParser()
-    ap.add_argument("-ifo", "--observatory", required=False,
+    ap.add_argument("-ifo", "--observatory", required=True,
             help="observatory")
     ap.add_argument("-s", "--start_time", required=True,
             help="start time")

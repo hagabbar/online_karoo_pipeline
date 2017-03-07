@@ -27,8 +27,9 @@ def preproc(cache):
 #         time = data.get_peak()[idx].gpsSeconds
 #         gps_array.append(time)
 
-     SNR = data.get_z()
-     mask = SNR > 7.5
+     SNR = data.get_column('snr')
+     freq = data.get_column('peak_frequency')
+     mask = np.logical_and(SNR>7.5,freq>30,freq<480)
      trig_times = np.asarray(GPS_obj)[mask]
      del gps_array
      snr = SNR[mask]
@@ -37,7 +38,7 @@ def preproc(cache):
      #dur = data.get_column('duration')[mask]
      #freq = data.get_column('peak_frequency')[mask]
 
-     return GPS_obj, snr #, q, mask, bw, dur, freq, data
+     return trig_times, snr #, q, mask, bw, dur, freq, data
 
 #def karoo_pip():
     
@@ -66,8 +67,11 @@ if __name__ == '__main__':
     
     comb = np.concatenate((times, snr))  
  
-    np.save('luciano_h1_times.npy', times)
-    np.save('luciano_h1_snr.npy', snr)
+    np.save('luciano_l1_times.npy', times)
+    np.save('luciano_l1_snr.npy', snr)
+
+
+
     #Run script for generating features
     #Need location for script and parameters to feed into it. Ask Marco?
 

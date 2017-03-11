@@ -27,8 +27,10 @@ def preproc(cache):
 #         time = data.get_peak()[idx].gpsSeconds
 #         gps_array.append(time)
 
-     SNR = data.get_z()
-     mask = SNR > 7.5
+     SNR = data.get_column('snr')
+     freq = data.get_column('peak_frequency')
+     mask1 = np.logical_and(freq>30,freq<480)
+     mask = np.logical_and(SNR>7.5,mask1)
      trig_times = np.asarray(GPS_obj)[mask]
      del gps_array
      snr = SNR[mask]
@@ -37,7 +39,7 @@ def preproc(cache):
      #dur = data.get_column('duration')[mask]
      #freq = data.get_column('peak_frequency')[mask]
 
-     return GPS_obj, snr #, q, mask, bw, dur, freq, data
+     return trig_times, snr #, q, mask, bw, dur, freq, data
 
 #def karoo_pip():
     

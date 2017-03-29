@@ -29,7 +29,7 @@ def preproc(cache):
 
      SNR = data.get_column('snr')
      freq = data.get_column('peak_frequency')
-     mask1 = np.logical_and(freq>30,freq<480)
+     mask1 = np.logical_and(freq>20,freq<4096)
      mask = np.logical_and(SNR>7.5,mask1)
      trig_times = np.asarray(GPS_obj)[mask]
      del gps_array
@@ -68,8 +68,11 @@ if __name__ == '__main__':
     
     comb = np.concatenate((times, snr))  
  
-    np.save('luciano_h1_times.npy', times)
-    np.save('luciano_h1_snr.npy', snr)
+    np.save('luciano_%s_times.npy' % ifo, times)
+    np.save('luciano_%s_snr.npy' % ifo, snr)
+
+
+
     #Run script for generating features
     #Need location for script and parameters to feed into it. Ask Marco?
 
